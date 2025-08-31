@@ -32,7 +32,7 @@ function App() {
         onLogoClick={() => setCurrentPage('home')}
         onCreateClick={() => setCurrentPage('upload')}
       />
-      <main className="pt-16">
+      <main className="pt-20">
         {renderPage()}
       </main>
     </div>
