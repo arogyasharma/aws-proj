@@ -13,7 +13,7 @@ const UploadPage = () => {
       const formData = new FormData();
       formData.append('files', imageFile);
       formData.append('caption', imageCaption);
-      const response = await fetch('http://172.20.10.2:8000/upload', {
+      const response = await fetch('https://champion-normal-raven.ngrok-free.app/upload', {
         method: 'POST',
         body: formData,
       });
