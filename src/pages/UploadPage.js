@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Upload, FileVideo, Type, Send, Image as ImageIcon, Sparkles } from 'lucide-react';
+﻿import React, { useState } from 'react';
+import { Upload, FileVideo, Type, Send, Image as ImageIcon, Sparkles, CheckCircle, X, Loader } from 'lucide-react';
 
 const UploadPage = () => {
   const [activeTab, setActiveTab] = useState('text');
@@ -8,59 +8,196 @@ const UploadPage = () => {
   const [videoCaption, setVideoCaption] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imageCaption, setImageCaption] = useState('');
+  
+  // Upload progress and status states
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState(null); // 'success', 'error', null
+  const [statusMessage, setStatusMessage] = useState('');
+
+  // Progress bar component
+  const ProgressBar = ({ progress, type }) => {
+    const colorClasses = {
+      text: 'from-blue-500 to-blue-600',
+      video: 'from-purple-500 to-pink-500',
+      image: 'from-green-500 to-teal-500'
+    };
+
+    return (
+      <div className="w-full bg-dark-300/50 rounded-full h-3 mb-4">
+        <div 
+          className={`h-3 bg-gradient-to-r ${colorClasses[type]} rounded-full transition-all duration-300 ease-out`}
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+    );
+  };
+
+  // Success/Error message component
+  const StatusMessage = ({ status, message, onClose }) => {
+    if (!status) return null;
+
+    const isSuccess = status === 'success';
+    const bgColor = isSuccess ? 'from-green-500/20 to-emerald-500/20' : 'from-red-500/20 to-rose-500/20';
+    const borderColor = isSuccess ? 'border-green-500/30' : 'border-red-500/30';
+    const textColor = isSuccess ? 'text-green-300' : 'text-red-300';
+    const iconColor = isSuccess ? 'text-green-400' : 'text-red-400';
+
+    return (
+      <div className={`p-4 rounded-2xl border-2 ${borderColor} bg-gradient-to-r ${bgColor} mb-6 flex items-center justify-between`}>
+        <div className="flex items-center space-x-3">
+          {isSuccess ? (
+            <CheckCircle className={`h-6 w-6 ${iconColor}`} />
+          ) : (
+            <X className={`h-6 w-6 ${iconColor}`} />
+          )}
+          <span className={`font-semibold ${textColor}`}>{message}</span>
+        </div>
+        <button
+          onClick={onClose}
+          className={`${iconColor} hover:opacity-70 transition-opacity`}
+        >
+          <X className="h-5 w-5" />
+        </button>
+      </div>
+    );
+  };
+
+  const clearStatus = () => {
+    setUploadStatus(null);
+    setStatusMessage('');
+    setUploadProgress(0);
+  };
   const handleImageUpload = async () => {
+    if (!imageFile) return;
+    
+    setIsUploading(true);
+    setUploadStatus(null);
+    setUploadProgress(0);
+
     try {
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) return prev;
+          return prev + Math.random() * 20;
+        });
+      }, 200);
+
       const formData = new FormData();
       formData.append('files', imageFile);
       formData.append('caption', imageCaption);
+      
       const response = await fetch('https://champion-normal-raven.ngrok-free.app/upload', {
         method: 'POST',
         body: formData,
       });
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
       if (response.ok) {
         setImageFile(null);
         setImageCaption('');
-        alert('Image uploaded successfully!');
+        setUploadStatus('success');
+        setStatusMessage('Image uploaded successfully! 🎉');
       } else {
-        alert('Upload failed: ' + (await response.text()));
+        const errorText = await response.text();
+        setUploadStatus('error');
+        setStatusMessage(`Upload failed: ${errorText}`);
       }
     } catch (error) {
       console.error('Upload error:', error);
-      alert('Upload failed: ' + error.message);
+      setUploadProgress(0);
+      setUploadStatus('error');
+      setStatusMessage(`Upload failed: ${error.message}`);
+    } finally {
+      setIsUploading(false);
     }
   };
 
-  const handleTextPost = () => {
-    console.log('Text post created:', textContent);
-    // Reset form
-    setTextContent('');
-    alert('Text post created successfully!');
+  const handleTextPost = async () => {
+    if (!textContent.trim()) return;
+    
+    setIsUploading(true);
+    setUploadStatus(null);
+    setUploadProgress(0);
+
+    try {
+      // Simulate progress for text post
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) return prev;
+          return prev + Math.random() * 30;
+        });
+      }, 100);
+
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+      
+      console.log('Text post created:', textContent);
+      setTextContent('');
+      setUploadStatus('success');
+      setStatusMessage('Text post created successfully! 🎉');
+    } catch (error) {
+      console.error('Text post error:', error);
+      setUploadProgress(0);
+      setUploadStatus('error');
+      setStatusMessage(`Failed to create post: ${error.message}`);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
  const handleVideoUpload = async () => {
-  try {
-    const formData = new FormData();
-    formData.append('files', videoFile);
-    formData.append('caption', videoCaption);
+    if (!videoFile) return;
     
-    const response = await fetch('https://champion-normal-raven.ngrok-free.app/upload', {
-      method: 'POST',
-      body: formData,
-    });
+    setIsUploading(true);
+    setUploadStatus(null);
+    setUploadProgress(0);
 
-    if (!response.ok) {
-      throw new Error(`Upload failed with status ${response.status}`);
+    try {
+      // Simulate progress updates
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) return prev;
+          return prev + Math.random() * 15;
+        });
+      }, 300);
+
+      const formData = new FormData();
+      formData.append('files', videoFile);
+      formData.append('caption', videoCaption);
+      
+      const response = await fetch('https://champion-normal-raven.ngrok-free.app/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      if (!response.ok) {
+        throw new Error(`Upload failed with status ${response.status}`);
+      }
+
+      // Clear form after successful upload
+      setVideoFile(null);
+      setVideoCaption('');
+      setUploadStatus('success');
+      setStatusMessage('Video uploaded successfully! 🎉');
+    } catch (error) {
+      console.error('Upload error:', error);
+      setUploadProgress(0);
+      setUploadStatus('error');
+      setStatusMessage('Failed to upload video. Please try again.');
+    } finally {
+      setIsUploading(false);
     }
-
-    // Clear form after successful upload
-    setVideoFile(null);
-    setVideoCaption('');
-    alert('Video uploaded successfully!');
-  } catch (error) {
-    console.error('Upload error:', error);
-    alert('Failed to upload video. Please try again.');
-  }
-};
+  };
 
 
   const handleFileChange = (e) => {
@@ -135,6 +272,28 @@ const UploadPage = () => {
 
           {/* Content */}
           <div className="p-8">
+            {/* Status Message */}
+            <StatusMessage 
+              status={uploadStatus} 
+              message={statusMessage} 
+              onClose={clearStatus} 
+            />
+            
+            {/* Progress Bar */}
+            {isUploading && (
+              <div className="mb-6">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-white font-semibold">
+                    {activeTab === 'text' ? 'Creating post...' : 
+                     activeTab === 'video' ? 'Uploading video...' : 
+                     'Uploading image...'}
+                  </span>
+                  <span className="text-gray-400">{Math.round(uploadProgress)}%</span>
+                </div>
+                <ProgressBar progress={uploadProgress} type={activeTab} />
+              </div>
+            )}
+
             {activeTab === 'text' ? (
               <div className="space-y-6">
                 <div>
@@ -152,11 +311,17 @@ const UploadPage = () => {
                 </div>
                 <button
                   onClick={handleTextPost}
-                  disabled={!textContent.trim()}
+                  disabled={!textContent.trim() || isUploading}
                   className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 transform hover:scale-105 hover:shadow-2xl disabled:hover:scale-100"
                 >
-                  <Send className="h-5 w-5" />
-                  <span>Share Your Thoughts</span>
+                  {isUploading && activeTab === 'text' ? (
+                    <Loader className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Send className="h-5 w-5" />
+                  )}
+                  <span>
+                    {isUploading && activeTab === 'text' ? 'Creating...' : 'Share Your Thoughts'}
+                  </span>
                 </button>
               </div>
             ) : activeTab === 'video' ? (
@@ -211,11 +376,17 @@ const UploadPage = () => {
 
                 <button
                   onClick={handleVideoUpload}
-                  disabled={!videoFile}
+                  disabled={!videoFile || isUploading}
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 transform hover:scale-105 hover:shadow-2xl disabled:hover:scale-100"
                 >
-                  <Upload className="h-5 w-5" />
-                  <span>Upload Video</span>
+                  {isUploading && activeTab === 'video' ? (
+                    <Loader className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Upload className="h-5 w-5" />
+                  )}
+                  <span>
+                    {isUploading && activeTab === 'video' ? 'Uploading...' : 'Upload Video'}
+                  </span>
                 </button>
               </div>
             ) : (
@@ -270,11 +441,17 @@ const UploadPage = () => {
 
                 <button
                   onClick={handleImageUpload}
-                  disabled={!imageFile}
+                  disabled={!imageFile || isUploading}
                   className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 transform hover:scale-105 hover:shadow-2xl disabled:hover:scale-100"
                 >
-                  <Upload className="h-5 w-5" />
-                  <span>Upload Image</span>
+                  {isUploading && activeTab === 'image' ? (
+                    <Loader className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <Upload className="h-5 w-5" />
+                  )}
+                  <span>
+                    {isUploading && activeTab === 'image' ? 'Uploading...' : 'Upload Image'}
+                  </span>
                 </button>
               </div>
             )}

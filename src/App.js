@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { AuthProvider } from './contexts/AuthContext';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import UploadPage from './pages/UploadPage';
@@ -27,15 +28,17 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-dark-100">
-      <Navbar 
-        onLogoClick={() => setCurrentPage('home')}
-        onCreateClick={() => setCurrentPage('upload')}
-      />
-      <main className="pt-20">
-        {renderPage()}
-      </main>
-    </div>
+    <AuthProvider>
+      <div className="min-h-screen bg-dark-100">
+        <Navbar 
+          onLogoClick={() => setCurrentPage('home')}
+          onCreateClick={() => setCurrentPage('upload')}
+        />
+        <main className="pt-20">
+          {renderPage()}
+        </main>
+      </div>
+    </AuthProvider>
   );
 }
 
