@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Plus, Bell, User, LogOut } from 'lucide-react';
+import { Search, Plus, Bell, User, LogOut, Settings, UserCircle, Heart, Bookmark, TrendingUp } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import LoginModal from './LoginModal';
 import SignupModal from './SignupModal';
@@ -24,6 +24,36 @@ const Navbar = ({ onLogoClick, onCreateClick }) => {
   const handleSwitchToLogin = () => {
     setShowSignupModal(false);
     setShowLoginModal(true);
+  };
+
+  const handleProfileClick = () => {
+    console.log('Navigate to profile page');
+    setShowUserMenu(false);
+    // TODO: Add navigation to profile page
+  };
+
+  const handleSettingsClick = () => {
+    console.log('Navigate to settings page');
+    setShowUserMenu(false);
+    // TODO: Add navigation to settings page
+  };
+
+  const handleLikedPostsClick = () => {
+    console.log('Navigate to liked posts');
+    setShowUserMenu(false);
+    // TODO: Add navigation to liked posts page
+  };
+
+  const handleBookmarksClick = () => {
+    console.log('Navigate to bookmarks');
+    setShowUserMenu(false);
+    // TODO: Add navigation to bookmarks page
+  };
+
+  const handleActivityClick = () => {
+    console.log('Navigate to activity/analytics');
+    setShowUserMenu(false);
+    // TODO: Add navigation to activity page
   };
 
   return (
@@ -85,21 +115,117 @@ const Navbar = ({ onLogoClick, onCreateClick }) => {
                     </div>
                   </button>
 
-                  {/* User Menu Dropdown */}
+                  {/* Enhanced User Menu Dropdown */}
                   {showUserMenu && (
-                    <div className="absolute right-0 mt-2 w-48 bg-dark-200 rounded-xl shadow-2xl border border-dark-400/30 z-50">
-                      <div className="p-4 border-b border-dark-400/30">
-                        <p className="text-white font-semibold">{user?.attributes?.name || user?.username}</p>
-                        <p className="text-gray-400 text-sm">{user?.attributes?.email}</p>
+                    <div className="absolute right-0 mt-2 w-72 bg-gradient-to-br from-dark-200 to-dark-300 rounded-2xl shadow-2xl border border-dark-400/30 z-50 backdrop-blur-sm">
+                      {/* User Profile Header */}
+                      <div className="p-6 border-b border-dark-400/30 bg-gradient-to-r from-purple-900/20 to-blue-900/20">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg ring-4 ring-green-500/20">
+                            <User className="h-8 w-8 text-white" />
+                          </div>
+                          <div className="flex-1">
+                            <h3 className="text-white font-bold text-lg">
+                              {user?.attributes?.name || 
+                               user?.attributes?.given_name || 
+                               'User'}
+                            </h3>
+                            <p className="text-gray-300 text-sm">{user?.attributes?.email || user?.username}</p>
+                            <div className="flex items-center space-x-4 mt-2">
+                              <span className="text-xs text-purple-300 bg-purple-500/20 px-2 py-1 rounded-full">Pro Member</span>
+                              <span className="text-xs text-green-300 bg-green-500/20 px-2 py-1 rounded-full">Verified</span>
+                            </div>
+                          </div>
+                        </div>
                       </div>
+
+                      {/* Profile Menu Items */}
                       <div className="p-2">
+                        {/* View Profile */}
                         <button
-                          onClick={handleLogout}
-                          className="w-full flex items-center space-x-3 px-4 py-3 text-red-300 hover:text-red-200 hover:bg-red-500/20 rounded-lg transition-all duration-300"
+                          onClick={handleProfileClick}
+                          className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-purple-500/20 hover:to-blue-500/20 rounded-xl transition-all duration-300 group"
                         >
-                          <LogOut className="h-5 w-5" />
-                          <span>Sign Out</span>
+                          <div className="p-2 bg-purple-500/20 rounded-lg group-hover:bg-purple-500/30 transition-all">
+                            <UserCircle className="h-5 w-5 text-purple-400" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="font-medium">View Profile</span>
+                            <p className="text-xs text-gray-400">See your public profile</p>
+                          </div>
                         </button>
+
+                        {/* Activity & Analytics */}
+                        <button
+                          onClick={handleActivityClick}
+                          className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-blue-500/20 hover:to-teal-500/20 rounded-xl transition-all duration-300 group"
+                        >
+                          <div className="p-2 bg-blue-500/20 rounded-lg group-hover:bg-blue-500/30 transition-all">
+                            <TrendingUp className="h-5 w-5 text-blue-400" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="font-medium">Activity</span>
+                            <p className="text-xs text-gray-400">View your stats & analytics</p>
+                          </div>
+                        </button>
+
+                        {/* Liked Posts */}
+                        <button
+                          onClick={handleLikedPostsClick}
+                          className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-red-500/20 rounded-xl transition-all duration-300 group"
+                        >
+                          <div className="p-2 bg-pink-500/20 rounded-lg group-hover:bg-pink-500/30 transition-all">
+                            <Heart className="h-5 w-5 text-pink-400" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="font-medium">Liked Posts</span>
+                            <p className="text-xs text-gray-400">Posts you've liked</p>
+                          </div>
+                        </button>
+
+                        {/* Bookmarks */}
+                        <button
+                          onClick={handleBookmarksClick}
+                          className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-amber-500/20 hover:to-orange-500/20 rounded-xl transition-all duration-300 group"
+                        >
+                          <div className="p-2 bg-amber-500/20 rounded-lg group-hover:bg-amber-500/30 transition-all">
+                            <Bookmark className="h-5 w-5 text-amber-400" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="font-medium">Bookmarks</span>
+                            <p className="text-xs text-gray-400">Saved posts</p>
+                          </div>
+                        </button>
+
+                        {/* Settings */}
+                        <button
+                          onClick={handleSettingsClick}
+                          className="w-full flex items-center space-x-4 px-4 py-3 text-gray-300 hover:text-white hover:bg-gradient-to-r hover:from-gray-500/20 hover:to-slate-500/20 rounded-xl transition-all duration-300 group"
+                        >
+                          <div className="p-2 bg-gray-500/20 rounded-lg group-hover:bg-gray-500/30 transition-all">
+                            <Settings className="h-5 w-5 text-gray-400" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <span className="font-medium">Settings</span>
+                            <p className="text-xs text-gray-400">Account preferences</p>
+                          </div>
+                        </button>
+
+                        <div className="border-t border-dark-400/30 mt-2 pt-2">
+                          {/* Sign Out */}
+                          <button
+                            onClick={handleLogout}
+                            className="w-full flex items-center space-x-4 px-4 py-3 text-red-300 hover:text-red-200 hover:bg-gradient-to-r hover:from-red-500/20 hover:to-rose-500/20 rounded-xl transition-all duration-300 group"
+                          >
+                            <div className="p-2 bg-red-500/20 rounded-lg group-hover:bg-red-500/30 transition-all">
+                              <LogOut className="h-5 w-5 text-red-400" />
+                            </div>
+                            <div className="flex-1 text-left">
+                              <span className="font-medium">Sign Out</span>
+                              <p className="text-xs text-gray-400">End your session</p>
+                            </div>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}

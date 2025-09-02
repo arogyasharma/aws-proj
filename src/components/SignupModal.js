@@ -4,10 +4,11 @@ import { useAuth } from '../contexts/AuthContext';
 
 const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
+    name: '',
     email: '',
     password: '',
     confirmPassword: '',
-    name: ''
+   
   });
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -93,7 +94,7 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     if (result.success) {
       onClose();
       // Reset form
-      setFormData({ email: '', password: '', confirmPassword: '', name: '' });
+      setFormData({ name: '' ,email: '', password: '', confirmPassword: ''});
       setConfirmationCode('');
       setGeneratedUsername('');
       setStep('signup');
@@ -119,7 +120,7 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   };
 
   const handleClose = () => {
-    setFormData({ email: '', password: '', confirmPassword: '', name: '' });
+    setFormData({ name: '' ,email: '', password: '', confirmPassword: '' });
     setConfirmationCode('');
     setGeneratedUsername('');
     setError('');

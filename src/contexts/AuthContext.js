@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { Amplify } from 'aws-amplify';
-import { signIn, signUp, signOut, getCurrentUser, confirmSignUp, resendSignUpCode } from 'aws-amplify/auth';
+import { signIn, signUp, signOut, getCurrentUser, confirmSignUp, resendSignUpCode, fetchUserAttributes } from 'aws-amplify/auth';
 import { cognitoConfig } from '../aws-config';
 
 // Configure Amplify with proper structure
@@ -34,7 +34,23 @@ export const AuthProvider = ({ children }) => {
     try {
       setLoading(true);
       const currentUser = await getCurrentUser();
-      setUser(currentUser);
+      console.log('Current user data:', currentUser); // Debug log to see user structure
+      
+      // Fetch user attributes to get name, email, etc.
+      try {
+        const userAttributes = await fetchUserAttributes();
+        console.log('User attributes:', userAttributes); // Debug log to see attributes structure
+        // Merge user info with attributes for easier access
+        const userWithAttributes = {
+          ...currentUser,
+          attributes: userAttributes
+        };
+        setUser(userWithAttributes);
+      } catch (attributeError) {
+        console.warn('Could not fetch user attributes:', attributeError);
+        // Still set the user even if we can't get attributes
+        setUser(currentUser);
+      }
     } catch (error) {
       console.log('No authenticated user');
       setUser(null);
@@ -55,7 +71,21 @@ export const AuthProvider = ({ children }) => {
 
       if (signInResult.isSignedIn) {
         const currentUser = await getCurrentUser();
-        setUser(currentUser);
+        console.log('User logged in:', currentUser); // Debug log to see user structure
+        
+        // Fetch user attributes after successful login
+        try {
+          const userAttributes = await fetchUserAttributes();
+          console.log('User attributes after login:', userAttributes);
+          const userWithAttributes = {
+            ...currentUser,
+            attributes: userAttributes
+          };
+          setUser(userWithAttributes);
+        } catch (attributeError) {
+          console.warn('Could not fetch user attributes after login:', attributeError);
+          setUser(currentUser);
+        }
         return { success: true };
       } else {
         // Handle additional sign-in steps if needed (MFA, etc.)
