@@ -101,6 +101,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (email, password, attributes = {}) => {
+        console.log('2. [AuthContext] Received by register:', { email, attributes });
     try {
       setError(null);
       setLoading(true);

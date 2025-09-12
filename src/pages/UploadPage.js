@@ -1,32 +1,30 @@
-﻿import React, { useState } from 'react';
-import { Upload, FileVideo, Type, Send, Image as ImageIcon, Sparkles, CheckCircle, X, Loader } from 'lucide-react';
+﻿import React, { useState, useRef } from 'react';
+import { Upload, FileVideo, Type, Send, Image as ImageIcon, Sparkles, CheckCircle, X, Loader, Camera, Plus, ArrowLeft, Heart, MessageCircle, Share, Bookmark } from 'lucide-react';
 
 const UploadPage = () => {
-  const [activeTab, setActiveTab] = useState('text');
+  const [activeTab, setActiveTab] = useState('image');
   const [textContent, setTextContent] = useState('');
   const [videoFile, setVideoFile] = useState(null);
   const [videoCaption, setVideoCaption] = useState('');
   const [imageFile, setImageFile] = useState(null);
   const [imageCaption, setImageCaption] = useState('');
+  const [mediaPreview, setMediaPreview] = useState(null);
+  const [step, setStep] = useState('upload'); // 'upload', 'edit', 'caption'
   
   // Upload progress and status states
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadStatus, setUploadStatus] = useState(null); // 'success', 'error', null
   const [statusMessage, setStatusMessage] = useState('');
+  
+  const fileInputRef = useRef(null);
 
   // Progress bar component
   const ProgressBar = ({ progress, type }) => {
-    const colorClasses = {
-      text: 'from-blue-500 to-blue-600',
-      video: 'from-purple-500 to-pink-500',
-      image: 'from-green-500 to-teal-500'
-    };
-
     return (
-      <div className="w-full bg-dark-300/50 rounded-full h-3 mb-4">
+      <div className="w-full bg-gray-700 rounded-full h-1">
         <div 
-          className={`h-3 bg-gradient-to-r ${colorClasses[type]} rounded-full transition-all duration-300 ease-out`}
+          className="h-1 bg-blue-500 rounded-full transition-all duration-300 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
@@ -38,26 +36,22 @@ const UploadPage = () => {
     if (!status) return null;
 
     const isSuccess = status === 'success';
-    const bgColor = isSuccess ? 'from-green-500/20 to-emerald-500/20' : 'from-red-500/20 to-rose-500/20';
-    const borderColor = isSuccess ? 'border-green-500/30' : 'border-red-500/30';
-    const textColor = isSuccess ? 'text-green-300' : 'text-red-300';
-    const iconColor = isSuccess ? 'text-green-400' : 'text-red-400';
+    const bgColor = isSuccess ? 'bg-green-600' : 'bg-red-600';
+    const textColor = 'text-white';
 
     return (
-      <div className={`p-4 rounded-2xl border-2 ${borderColor} bg-gradient-to-r ${bgColor} mb-6 flex items-center justify-between`}>
-        <div className="flex items-center space-x-3">
-          {isSuccess ? (
-            <CheckCircle className={`h-6 w-6 ${iconColor}`} />
-          ) : (
-            <X className={`h-6 w-6 ${iconColor}`} />
-          )}
-          <span className={`font-semibold ${textColor}`}>{message}</span>
-        </div>
+      <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 ${bgColor} px-4 py-2 rounded-lg flex items-center space-x-2 shadow-lg`}>
+        {isSuccess ? (
+          <CheckCircle className="h-5 w-5 text-white" />
+        ) : (
+          <X className="h-5 w-5 text-white" />
+        )}
+        <span className={`text-sm font-medium ${textColor}`}>{message}</span>
         <button
           onClick={onClose}
-          className={`${iconColor} hover:opacity-70 transition-opacity`}
+          className="text-white hover:opacity-70 transition-opacity ml-2"
         >
-          <X className="h-5 w-5" />
+          <X className="h-4 w-4" />
         </button>
       </div>
     );
@@ -188,7 +182,7 @@ const UploadPage = () => {
       setVideoFile(null);
       setVideoCaption('');
       setUploadStatus('success');
-      setStatusMessage('Video uploaded successfully! 🎉');
+      setStatusMessage('Video uploaded successfully! ');
     } catch (error) {
       console.error('Upload error:', error);
       setUploadProgress(0);
@@ -203,259 +197,206 @@ const UploadPage = () => {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setMediaPreview(event.target.result);
+        setStep('caption');
+      };
+      
       if (activeTab === 'video') {
         setVideoFile(file);
+        reader.readAsDataURL(file);
       } else if (activeTab === 'image') {
         setImageFile(file);
+        reader.readAsDataURL(file);
       }
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-blue-900/30 to-teal-900/20 py-8">
-      <div className="max-w-2xl mx-auto px-4">
-        <div className="bg-gradient-to-br from-dark-200 to-dark-300 rounded-2xl shadow-2xl overflow-hidden border border-dark-400/30 backdrop-blur-sm">
-          {/* Header */}
-          <div className="p-6 border-b border-dark-300/50 bg-gradient-to-r from-blue-900/20 to-purple-900/20">
-            <div className="flex items-center justify-center space-x-3">
-              <Sparkles className="h-7 w-7 text-blue-400" />
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-blue-400 bg-clip-text text-transparent">
-                Create New Post
-              </h1>
-              <Sparkles className="h-7 w-7 text-purple-400" />
-            </div>
-            <p className="text-gray-400 text-center mt-2">Share your thoughts with the world</p>
-          </div>
+  const handleBackToUpload = () => {
+    setStep('upload');
+    setMediaPreview(null);
+    setImageFile(null);
+    setVideoFile(null);
+    setImageCaption('');
+    setVideoCaption('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
-           
-          <div className="flex border-b border-dark-300/50 bg-dark-100/20">
+  const triggerFileInput = () => {
+    fileInputRef.current?.click();
+  };
+
+  return (
+    <div className="min-h-screen bg-black">
+      <div className="max-w-md mx-auto bg-black">
+        {/* Instagram-style Header */}
+        <div className="flex items-center justify-between p-4 border-b border-gray-800">
+          {step === 'caption' ? (
+            <button 
+              onClick={handleBackToUpload}
+              className="text-white hover:text-gray-300 transition-colors"
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </button>
+          ) : (
+            <div></div>
+          )}
+          
+          <h1 className="text-white font-semibold text-lg">
+            {step === 'upload' ? 'New Post' : 'New Post'}
+          </h1>
+          
+          {step === 'caption' && (
             <button
-              onClick={() => setActiveTab('text')}
-              className={`flex-1 py-5 px-6 text-center font-semibold transition-all duration-300 transform hover:scale-105 ${
-                activeTab === 'text'
-                  ? 'text-blue-400 border-b-3 border-blue-500 bg-gradient-to-t from-blue-500/10 to-transparent shadow-lg'
-                  : 'text-gray-400 hover:text-white hover:bg-dark-300/50'
+              onClick={activeTab === 'image' ? handleImageUpload : handleVideoUpload}
+              disabled={isUploading || (!imageFile && !videoFile)}
+              className="text-blue-500 font-semibold hover:text-blue-400 transition-colors disabled:text-gray-500"
+            >
+              {isUploading ? 'Sharing...' : 'Share'}
+            </button>
+          )}
+        </div>
+
+        {/* Tab Navigation - Instagram Style */}
+        {step === 'upload' && (
+          <div className="flex bg-black border-b border-gray-800">
+            <button
+              onClick={() => setActiveTab('image')}
+              className={`flex-1 py-3 text-center font-medium transition-all ${
+                activeTab === 'image'
+                  ? 'text-white border-b-2 border-white'
+                  : 'text-gray-500'
               }`}
             >
-              <div className="flex items-center justify-center space-x-2">
-                <Type className="h-5 w-5" />
-                <span>Text Post</span>
-              </div>
+              GALLERY
             </button>
             <button
               onClick={() => setActiveTab('video')}
-              className={`flex-1 py-5 px-6 text-center font-semibold transition-all duration-300 transform hover:scale-105 ${
+              className={`flex-1 py-3 text-center font-medium transition-all ${
                 activeTab === 'video'
-                  ? 'text-purple-400 border-b-3 border-purple-500 bg-gradient-to-t from-purple-500/10 to-transparent shadow-lg'
-                  : 'text-gray-400 hover:text-white hover:bg-dark-300/50'
+                  ? 'text-white border-b-2 border-white'
+                  : 'text-gray-500'
               }`}
             >
-              <div className="flex items-center justify-center space-x-2">
-                <FileVideo className="h-5 w-5" />
-                <span>Video Upload</span>
-              </div>
-            </button>
-            <button
-              onClick={() => setActiveTab('image')}
-              className={`flex-1 py-5 px-6 text-center font-semibold transition-all duration-300 transform hover:scale-105 ${
-                activeTab === 'image'
-                  ? 'text-green-400 border-b-3 border-green-500 bg-gradient-to-t from-green-500/10 to-transparent shadow-lg'
-                  : 'text-gray-400 hover:text-white hover:bg-dark-300/50'
-              }`}
-            >
-              <div className="flex items-center justify-center space-x-2">
-                <ImageIcon className="h-5 w-5" />
-                <span>Image Upload</span>
-              </div>
+              VIDEO
             </button>
           </div>
+        )}
 
-          {/* Content */}
-          <div className="p-8">
-            {/* Status Message */}
-            <StatusMessage 
-              status={uploadStatus} 
-              message={statusMessage} 
-              onClose={clearStatus} 
-            />
-            
-            {/* Progress Bar */}
-            {isUploading && (
-              <div className="mb-6">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-white font-semibold">
-                    {activeTab === 'text' ? 'Creating post...' : 
-                     activeTab === 'video' ? 'Uploading video...' : 
-                     'Uploading image...'}
-                  </span>
-                  <span className="text-gray-400">{Math.round(uploadProgress)}%</span>
-                </div>
-                <ProgressBar progress={uploadProgress} type={activeTab} />
+        {/* Main Content */}
+        <div className="flex-1">
+          {/* Status Message */}
+          <StatusMessage 
+            status={uploadStatus} 
+            message={statusMessage} 
+            onClose={clearStatus} 
+          />
+          
+          {/* Progress Bar */}
+          {isUploading && (
+            <div className="p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-white text-sm">
+                  {activeTab === 'video' ? 'Uploading video...' : 'Uploading image...'}
+                </span>
+                <span className="text-gray-400 text-sm">{Math.round(uploadProgress)}%</span>
               </div>
-            )}
+              <ProgressBar progress={uploadProgress} type={activeTab} />
+            </div>
+          )}
 
-            {activeTab === 'text' ? (
-              <div className="space-y-6">
-                <div>
-                  <label className="block text-sm font-semibold text-blue-300 mb-3 flex items-center space-x-2">
-                    <Type className="h-4 w-4" />
-                    <span>What's on your mind?</span>
-                  </label>
-                  <textarea
-                    value={textContent}
-                    onChange={(e) => setTextContent(e.target.value)}
-                    placeholder="Share your thoughts with the Sportech community..."
-                    rows={10}
-                    className="w-full px-6 py-4 bg-gradient-to-br from-dark-100 to-dark-200 border-2 border-dark-300/50 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500/50 resize-none transition-all duration-300 hover:border-blue-500/30 shadow-inner"
+          {step === 'upload' ? (
+            // Upload Step - Instagram Style
+            <div className="relative h-96">
+              {/* Upload Area */}
+              <div 
+                onClick={triggerFileInput}
+                className="h-full bg-gray-900 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-800 transition-colors"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <Camera className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-white text-lg font-medium mb-2">
+                    {activeTab === 'image' ? 'Select photos to share' : 'Select videos to share'}
+                  </h3>
+                  <p className="text-gray-400 text-sm">
+                    {activeTab === 'image' ? 'You can select multiple photos' : 'You can upload one video at a time'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Hidden File Input */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={activeTab === 'image' ? 'image/*' : 'video/*'}
+                onChange={handleFileChange}
+                className="hidden"
+                multiple={activeTab === 'image'}
+              />
+            </div>
+          ) : (
+            // Caption Step - Instagram Style
+            <div className="h-screen bg-black">
+              {/* Media Preview */}
+              <div className="h-96 bg-black flex items-center justify-center">
+                {mediaPreview && activeTab === 'image' && (
+                  <img 
+                    src={mediaPreview} 
+                    alt="Preview" 
+                    className="max-h-full max-w-full object-contain"
                   />
-                </div>
-                <button
-                  onClick={handleTextPost}
-                  disabled={!textContent.trim() || isUploading}
-                  className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 transform hover:scale-105 hover:shadow-2xl disabled:hover:scale-100"
-                >
-                  {isUploading && activeTab === 'text' ? (
-                    <Loader className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Send className="h-5 w-5" />
-                  )}
-                  <span>
-                    {isUploading && activeTab === 'text' ? 'Creating...' : 'Share Your Thoughts'}
-                  </span>
-                </button>
+                )}
+                {mediaPreview && activeTab === 'video' && (
+                  <video 
+                    src={mediaPreview} 
+                    className="max-h-full max-w-full object-contain"
+                    controls
+                  />
+                )}
               </div>
-            ) : activeTab === 'video' ? (
-              <div className="space-y-6">
-                {/* Video Upload Area */}
-                <div>
-                  <label className="block text-sm font-semibold text-purple-300 mb-3 flex items-center space-x-2">
-                    <FileVideo className="h-4 w-4" />
-                    <span>Upload Video</span>
-                  </label>
-                  <div className="border-3 border-dashed border-purple-500/30 bg-gradient-to-br from-purple-900/10 to-pink-900/10 rounded-2xl p-12 text-center hover:border-purple-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10">
-                    <input
-                      type="file"
-                      accept="video/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                      id="video-upload"
+
+              {/* Caption Input */}
+              <div className="p-4 border-t border-gray-800">
+                <div className="flex items-start space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex-shrink-0"></div>
+                  <div className="flex-1">
+                    <textarea
+                      value={activeTab === 'image' ? imageCaption : videoCaption}
+                      onChange={(e) => activeTab === 'image' ? setImageCaption(e.target.value) : setVideoCaption(e.target.value)}
+                      placeholder="Write a caption..."
+                      className="w-full bg-transparent text-white placeholder-gray-500 resize-none border-none outline-none text-sm"
+                      rows={4}
                     />
-                    <label
-                      htmlFor="video-upload"
-                      className="cursor-pointer flex flex-col items-center space-y-6 transition-all duration-300 hover:scale-105"
-                    >
-                      <div className="p-4 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-full">
-                        <Upload className="h-16 w-16 text-purple-400" />
-                      </div>
-                      <div>
-                        <p className="text-white font-semibold text-lg">
-                          {videoFile ? videoFile.name : 'Click to upload video'}
-                        </p>
-                        <p className="text-purple-300 text-sm mt-2">
-                          MP4, WebM, or OGV (max 100MB)
-                        </p>
-                      </div>
-                    </label>
                   </div>
                 </div>
-
-                {/* Video Caption */}
-                <div>
-                  <label className="block text-sm font-semibold text-purple-300 mb-3 flex items-center space-x-2">
-                    <Type className="h-4 w-4" />
-                    <span>Caption</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={videoCaption}
-                    onChange={(e) => setVideoCaption(e.target.value)}
-                    placeholder="Add a caption to your video..."
-                    className="w-full px-6 py-4 bg-gradient-to-br from-dark-100 to-dark-200 border-2 border-dark-300/50 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500/50 transition-all duration-300 hover:border-purple-500/30 shadow-inner"
-                  />
-                </div>
-
-                <button
-                  onClick={handleVideoUpload}
-                  disabled={!videoFile || isUploading}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 transform hover:scale-105 hover:shadow-2xl disabled:hover:scale-100"
-                >
-                  {isUploading && activeTab === 'video' ? (
-                    <Loader className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Upload className="h-5 w-5" />
-                  )}
-                  <span>
-                    {isUploading && activeTab === 'video' ? 'Uploading...' : 'Upload Video'}
-                  </span>
-                </button>
-              </div>
-            ) : (
-              <div className="space-y-6">
-                {/* Image Upload Area */}
-                <div>
-                  <label className="block text-sm font-semibold text-green-300 mb-3 flex items-center space-x-2">
-                    <ImageIcon className="h-4 w-4" />
-                    <span>Upload Image</span>
-                  </label>
-                  <div className="border-3 border-dashed border-green-500/30 bg-gradient-to-br from-green-900/10 to-teal-900/10 rounded-2xl p-12 text-center hover:border-green-400/50 transition-all duration-300 hover:shadow-lg hover:shadow-green-500/10">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                      id="image-upload"
-                    />
-                    <label
-                      htmlFor="image-upload"
-                      className="cursor-pointer flex flex-col items-center space-y-6 transition-all duration-300 hover:scale-105"
-                    >
-                      <div className="p-4 bg-gradient-to-br from-green-500/20 to-teal-500/20 rounded-full">
-                        <Upload className="h-16 w-16 text-green-400" />
-                      </div>
-                      <div>
-                        <p className="text-white font-semibold text-lg">
-                          {imageFile ? imageFile.name : 'Click to upload image'}
-                        </p>
-                        <p className="text-green-300 text-sm mt-2">
-                          JPG, PNG, GIF (max 10MB)
-                        </p>
-                      </div>
-                    </label>
+                
+                {/* Post Interaction Preview */}
+                <div className="mt-4 pt-4 border-t border-gray-800">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                      <Heart className="h-6 w-6 text-gray-400" />
+                      <MessageCircle className="h-6 w-6 text-gray-400" />
+                      <Send className="h-6 w-6 text-gray-400" />
+                    </div>
+                    <Bookmark className="h-6 w-6 text-gray-400" />
+                  </div>
+                  <div className="mt-2">
+                    <p className="text-white text-sm font-semibold">0 likes</p>
+                    {(imageCaption || videoCaption) && (
+                      <p className="text-white text-sm mt-1">
+                        <span className="font-semibold">username</span> {activeTab === 'image' ? imageCaption : videoCaption}
+                      </p>
+                    )}
                   </div>
                 </div>
-
-                {/* Image Caption */}
-                <div>
-                  <label className="block text-sm font-semibold text-green-300 mb-3 flex items-center space-x-2">
-                    <Type className="h-4 w-4" />
-                    <span>Caption</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={imageCaption}
-                    onChange={(e) => setImageCaption(e.target.value)}
-                    placeholder="Add a caption to your image..."
-                    className="w-full px-6 py-4 bg-gradient-to-br from-dark-100 to-dark-200 border-2 border-dark-300/50 rounded-2xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all duration-300 hover:border-green-500/30 shadow-inner"
-                  />
-                </div>
-
-                <button
-                  onClick={handleImageUpload}
-                  disabled={!imageFile || isUploading}
-                  className="w-full bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-4 px-8 rounded-2xl transition-all duration-300 flex items-center justify-center space-x-3 transform hover:scale-105 hover:shadow-2xl disabled:hover:scale-100"
-                >
-                  {isUploading && activeTab === 'image' ? (
-                    <Loader className="h-5 w-5 animate-spin" />
-                  ) : (
-                    <Upload className="h-5 w-5" />
-                  )}
-                  <span>
-                    {isUploading && activeTab === 'image' ? 'Uploading...' : 'Upload Image'}
-                  </span>
-                </button>
               </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
     </div>

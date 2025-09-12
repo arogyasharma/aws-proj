@@ -1,6 +1,6 @@
 import React from 'react';
 import PostCard from '../components/PostCard';
-import { TrendingUp, Users, Star, Zap, Heart, MessageCircle } from 'lucide-react';
+import { TrendingUp, Users, Star, Zap, Heart, MessageCircle, Search, Bell, Plus, Home, Compass, User, Settings, LogOut, Bookmark, UserPlus } from 'lucide-react';
 
 const HomePage = ({ onPostClick }) => {
   // Mock data for demonstration
@@ -128,172 +128,227 @@ const HomePage = ({ onPostClick }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900/20 via-blue-900/30 to-teal-900/20 relative">
-      {/* Background Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-purple-500/5 to-transparent"></div>
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-blue-500/5 to-transparent"></div>
-      
-      <div className="relative z-10">
-        {/* Hero Section */}
-        <div className="bg-gradient-to-r from-purple-900/40 via-blue-900/50 to-teal-900/40 backdrop-blur-sm border-b border-purple-500/20">
-          <div className="max-w-7xl mx-auto px-4 py-16">
-            <div className="text-center mb-8">
-              <h1 className="text-5xl md:text-6xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-teal-400 bg-clip-text text-transparent mb-4 animate-fade-in">
-                Welcome to Sportech
-              </h1>
-              <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto animate-fade-in" style={{ animationDelay: '200ms' }}>
-                Connect, share, and discover amazing content from our vibrant community of creators and innovators
-              </p>
-              
-              {/* Stats Section */}
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto animate-fade-in" style={{ animationDelay: '400ms' }}>
-                <div className="bg-gradient-to-br from-purple-500/20 to-purple-600/10 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30">
-                  <div className="flex items-center justify-center mb-3">
-                    <Users className="h-8 w-8 text-purple-400" />
+    <div className="min-h-screen bg-gray-50">
+
+      {/* Main Content */}
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+          {/* Left Sidebar */}
+          <div className="hidden lg:block lg:col-span-1">
+            <div className="space-y-4 sticky top-24">
+              {/* User Profile Card */}
+              <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                <div className="flex items-center space-x-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                    <User className="h-6 w-6 text-white" />
                   </div>
-                  <div className="text-2xl font-bold text-white">25.4K</div>
-                  <div className="text-sm text-purple-300">Active Users</div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 backdrop-blur-sm rounded-2xl p-6 border border-blue-500/30">
-                  <div className="flex items-center justify-center mb-3">
-                    <Heart className="h-8 w-8 text-blue-400" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Your Profile</h3>
+                    <p className="text-sm text-gray-500">@yourhandle</p>
                   </div>
-                  <div className="text-2xl font-bold text-white">1.2M</div>
-                  <div className="text-sm text-blue-300">Likes Given</div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-teal-500/20 to-teal-600/10 backdrop-blur-sm rounded-2xl p-6 border border-teal-500/30">
-                  <div className="flex items-center justify-center mb-3">
-                    <MessageCircle className="h-8 w-8 text-teal-400" />
-                  </div>
-                  <div className="text-2xl font-bold text-white">456K</div>
-                  <div className="text-sm text-teal-300">Comments</div>
-                </div>
-                
-                <div className="bg-gradient-to-br from-green-500/20 to-green-600/10 backdrop-blur-sm rounded-2xl p-6 border border-green-500/30">
-                  <div className="flex items-center justify-center mb-3">
-                    <Star className="h-8 w-8 text-green-400" />
-                  </div>
-                  <div className="text-2xl font-bold text-white">98%</div>
-                  <div className="text-sm text-green-300">Satisfaction</div>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        {/* Main Content */}
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-            {/* Left Sidebar - Trending Topics */}
-            <div className="lg:col-span-1 space-y-6">
-              <div className="bg-gradient-to-br from-purple-900/30 to-blue-900/20 backdrop-blur-sm rounded-2xl p-6 border border-purple-500/30 sticky top-28">
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                  <TrendingUp className="h-6 w-6 text-purple-400 mr-2" />
-                  Trending Topics
+              {/* Navigation Menu */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-900 mb-3">Menu</h3>
+                  <nav className="space-y-1">
+                    {[
+                      { icon: Home, label: 'Home', active: true },
+                      { icon: Compass, label: 'Explore' },
+                      { icon: Bookmark, label: 'Saved' },
+                      { icon: Settings, label: 'Settings' },
+                    ].map((item) => (
+                      <a
+                        key={item.label}
+                        href="#"
+                        className={`flex items-center space-x-3 px-3 py-2 rounded-lg text-sm transition-colors ${
+                          item.active
+                            ? 'bg-blue-50 text-blue-600'
+                            : 'text-gray-700 hover:bg-gray-50'
+                        }`}
+                      >
+                        <item.icon className="h-5 w-5" />
+                        <span>{item.label}</span>
+                      </a>
+                    ))}
+                  </nav>
+                </div>
+              </div>
+
+              {/* Trending Topics */}
+              <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                  <TrendingUp className="h-5 w-5 text-blue-600 mr-2" />
+                  Trending
                 </h3>
-                <div className="space-y-3">
-                  {['#TechInnovation', '#CreativeArts', '#Sustainability', '#DigitalNomad', '#FutureOfWork'].map((topic, index) => (
-                    <div key={topic} className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-500/10 to-blue-500/10 rounded-xl hover:from-purple-500/20 hover:to-blue-500/20 transition-all duration-300 cursor-pointer">
-                      <span className="text-purple-300 font-medium">{topic}</span>
-                      <span className="text-xs text-gray-400">{Math.floor(Math.random() * 50) + 10}K</span>
+                <div className="space-y-2">
+                  {['#TechInnovation', '#CreativeArts', '#Sustainability', '#DigitalNomad'].map((topic) => (
+                    <div key={topic} className="flex items-center justify-between">
+                      <span className="text-sm text-blue-600 hover:underline cursor-pointer">{topic}</span>
+                      <span className="text-xs text-gray-500">{Math.floor(Math.random() * 50) + 10}K</span>
                     </div>
                   ))}
                 </div>
               </div>
             </div>
+          </div>
 
-            {/* Center Feed */}
-            <div className="lg:col-span-2 space-y-8">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                  Latest Posts
-                </h2>
-                <p className="text-gray-400">Stay updated with the newest content</p>
+          {/* Center Feed */}
+          <div className="lg:col-span-2">
+            <div className="space-y-6">
+              {/* Create Post Card */}
+              <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+                    <User className="h-5 w-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <button className="w-full text-left px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-gray-500 transition-colors">
+                      What's on your mind?
+                    </button>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-200">
+                  <button className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                      <Heart className="h-4 w-4 text-red-500" />
+                    </div>
+                    <span className="text-sm font-medium">Photo</span>
+                  </button>
+                  <button className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                      <MessageCircle className="h-4 w-4 text-blue-500" />
+                    </div>
+                    <span className="text-sm font-medium">Video</span>
+                  </button>
+                  <button className="flex items-center space-x-2 px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                      <Plus className="h-4 w-4 text-green-500" />
+                    </div>
+                    <span className="text-sm font-medium">Live</span>
+                  </button>
+                </div>
               </div>
-              
+
+              {/* Posts Feed */}
               {mockPosts.map((post, index) => (
-                <div
-                  key={post.id}
-                  className="transform transition-all duration-500 hover:scale-[1.01] animate-fade-in"
-                  style={{
-                    animationDelay: `${index * 100}ms`
-                  }}
-                >
-                  <PostCard
-                    post={post}
-                    onCommentClick={onPostClick}
-                  />
+                <div key={post.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+                  <PostCard post={post} onCommentClick={onPostClick} />
                 </div>
               ))}
             </div>
+          </div>
 
-            {/* Right Sidebar - Community Highlights */}
-            <div className="lg:col-span-1 space-y-6">
-              <div className="bg-gradient-to-br from-teal-900/30 to-green-900/20 backdrop-blur-sm rounded-2xl p-6 border border-teal-500/30 sticky top-28">
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                  <Star className="h-6 w-6 text-teal-400 mr-2" />
-                  Top Creators
-                </h3>
-                <div className="space-y-4">
+          {/* Right Sidebar */}
+          <div className="hidden lg:block lg:col-span-1">
+            <div className="space-y-4 sticky top-24">
+              {/* Suggested Users */}
+              <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-gray-900">Suggestions for you</h3>
+                  <button className="text-sm text-blue-600 hover:text-blue-700">See All</button>
+                </div>
+                <div className="space-y-3">
                   {[
-                    { name: 'Alex Creative', followers: '12.3K', avatar: '🎨' },
-                    { name: 'Sarah Explorer', followers: '9.8K', avatar: '🌍' },
-                    { name: 'Mike Tech', followers: '15.1K', avatar: '💻' },
-                    { name: 'Emma Chef', followers: '8.4K', avatar: '👩‍🍳' },
-                  ].map((creator, index) => (
-                    <div key={creator.name} className="flex items-center p-3 bg-gradient-to-r from-teal-500/10 to-green-500/10 rounded-xl hover:from-teal-500/20 hover:to-green-500/20 transition-all duration-300 cursor-pointer">
-                      <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-green-400 rounded-full flex items-center justify-center text-lg mr-3">
-                        {creator.avatar}
+                    { name: 'Alex Creative', handle: '@alex_creative', mutual: '5 mutual friends' },
+                    { name: 'Sarah Explorer', handle: '@sarah_explorer', mutual: '12 mutual friends' },
+                    { name: 'Mike Tech', handle: '@mike_tech', mutual: '3 mutual friends' },
+                    { name: 'Emma Chef', handle: '@emma_chef', mutual: '8 mutual friends' },
+                  ].map((user) => (
+                    <div key={user.name} className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-400 to-purple-400 rounded-full flex items-center justify-center">
+                          <User className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{user.name}</p>
+                          <p className="text-xs text-gray-500">{user.mutual}</p>
+                        </div>
                       </div>
-                      <div className="flex-1">
-                        <div className="text-white font-medium text-sm">{creator.name}</div>
-                        <div className="text-teal-300 text-xs">{creator.followers} followers</div>
-                      </div>
+                      <button className="text-blue-600 hover:bg-blue-50 px-3 py-1 rounded-full text-sm font-medium transition-colors">
+                        Follow
+                      </button>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Quick Actions */}
-              <div className="bg-gradient-to-br from-blue-900/30 to-purple-900/20 backdrop-blur-sm rounded-2xl p-6 border border-blue-500/30">
-                <h3 className="text-xl font-bold text-white mb-4 flex items-center">
-                  <Zap className="h-6 w-6 text-blue-400 mr-2" />
-                  Quick Actions
+              {/* Top Creators */}
+              <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                <h3 className="font-semibold text-gray-900 mb-3 flex items-center">
+                  <Star className="h-5 w-5 text-yellow-500 mr-2" />
+                  Top Creators
                 </h3>
                 <div className="space-y-3">
-                  <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105">
-                    Create Post
-                  </button>
-                  <button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105">
-                    Go Live
-                  </button>
-                  <button className="w-full bg-gradient-to-r from-teal-600 to-green-600 hover:from-teal-700 hover:to-green-700 text-white font-semibold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105">
-                    Join Community
-                  </button>
+                  {[
+                    { name: 'Alex Creative', followers: '12.3K', verified: true },
+                    { name: 'Sarah Explorer', followers: '9.8K', verified: false },
+                    { name: 'Mike Tech', followers: '15.1K', verified: true },
+                  ].map((creator, index) => (
+                    <div key={creator.name} className="flex items-center space-x-3">
+                      <div className="relative">
+                        <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                          <User className="h-4 w-4 text-white" />
+                        </div>
+                        {creator.verified && (
+                          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-blue-500 rounded-full border-2 border-white">
+                            <Star className="h-1.5 w-1.5 text-white" />
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm font-medium text-gray-900">{creator.name}</p>
+                        <p className="text-xs text-gray-500">{creator.followers} followers</p>
+                      </div>
+                      <span className="text-lg">#{index + 1}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer Links */}
+              <div className="bg-white rounded-lg p-4 shadow-sm border border-gray-200">
+                <div className="text-xs text-gray-500 space-y-1">
+                  <div className="flex flex-wrap gap-2">
+                    <a href="#" className="hover:underline">About</a>
+                    <a href="#" className="hover:underline">Help</a>
+                    <a href="#" className="hover:underline">Privacy</a>
+                    <a href="#" className="hover:underline">Terms</a>
+                  </div>
+                  <p className="mt-2">© 2024 Sportech. All rights reserved.</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Footer Section */}
-        <div className="bg-gradient-to-r from-purple-900/40 via-blue-900/50 to-teal-900/40 backdrop-blur-sm border-t border-purple-500/20 mt-16">
-          <div className="max-w-7xl mx-auto px-4 py-8">
-            <div className="text-center">
-              <p className="text-gray-300 mb-2">Join thousands of creators sharing their passion</p>
-              <div className="flex justify-center space-x-4 text-sm text-purple-300">
-                <span>© 2024 Sportech</span>
-                <span>•</span>
-                <span>Privacy</span>
-                <span>•</span>
-                <span>Terms</span>
-                <span>•</span>
-                <span>Support</span>
-              </div>
-            </div>
-          </div>
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 px-4 py-2 z-50">
+        <div className="flex items-center justify-around">
+          <button className="flex flex-col items-center space-y-1 p-2">
+            <Home className="h-6 w-6 text-blue-600" />
+            <span className="text-xs text-blue-600 font-medium">Home</span>
+          </button>
+          <button className="flex flex-col items-center space-y-1 p-2">
+            <Search className="h-6 w-6 text-gray-400" />
+            <span className="text-xs text-gray-400">Search</span>
+          </button>
+          <button className="flex flex-col items-center space-y-1 p-2">
+            <Plus className="h-6 w-6 text-gray-400" />
+            <span className="text-xs text-gray-400">Create</span>
+          </button>
+          <button className="flex flex-col items-center space-y-1 p-2 relative">
+            <Bell className="h-6 w-6 text-gray-400" />
+            <span className="text-xs text-gray-400">Activity</span>
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">3</span>
+          </button>
+          <button className="flex flex-col items-center space-y-1 p-2">
+            <User className="h-6 w-6 text-gray-400" />
+            <span className="text-xs text-gray-400">Profile</span>
+          </button>
         </div>
       </div>
     </div>

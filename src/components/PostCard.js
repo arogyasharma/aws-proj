@@ -1,40 +1,48 @@
-import React from 'react';
-import { Heart, MessageCircle, Share, MoreHorizontal, User } from 'lucide-react';
+import React, { useState } from 'react';
+import { Heart, MessageCircle, Share, MoreHorizontal, User, Bookmark } from 'lucide-react';
 
 const PostCard = ({ post, onCommentClick }) => {
+  const [liked, setLiked] = useState(false);
+  const [saved, setSaved] = useState(false);
+
   const handleCommentClick = () => {
     if (onCommentClick) {
       onCommentClick(post);
     }
   };
 
+  const handleLike = () => {
+    setLiked(!liked);
+  };
+
+  const handleSave = () => {
+    setSaved(!saved);
+  };
+
   return (
-    <div className="bg-gradient-to-br from-dark-200 to-dark-300 rounded-2xl shadow-2xl overflow-hidden border border-dark-400/30 backdrop-blur-sm hover:shadow-3xl transition-all duration-300">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow duration-200">
       {/* Header */}
-      <div className="flex items-center justify-between p-6 bg-gradient-to-r from-dark-200/50 to-dark-300/50 backdrop-blur-sm">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center shadow-lg ring-2 ring-blue-500/20">
-            <User className="h-6 w-6 text-white" />
+      <div className="flex items-center justify-between p-4">
+        <div className="flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center">
+            <User className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h3 className="text-white font-bold text-lg">{post.username}</h3>
-            <p className="text-blue-300 text-sm bg-blue-500/10 px-2 py-1 rounded-full inline-block">{post.timestamp}</p>
+            <h3 className="font-semibold text-gray-900 text-sm">{post.username}</h3>
+            <p className="text-gray-500 text-xs">{post.timestamp}</p>
           </div>
         </div>
-        <button className="text-gray-400 hover:text-white transition-all duration-300 p-2 rounded-full hover:bg-dark-400/50 transform hover:scale-110">
-          <MoreHorizontal className="h-6 w-6" />
+        <button className="text-gray-400 hover:text-gray-600 transition-colors p-1">
+          <MoreHorizontal className="h-5 w-5" />
         </button>
       </div>
 
       {/* Content */}
-      <div className="px-6 pb-6">
+      <div>
         {post.type === 'video' ? (
-          <div className="mb-6">
-            {post.caption && (
-              <p className="text-gray-100 mb-4 text-lg leading-relaxed">{post.caption}</p>
-            )}
+          <div>
             <video
-              className="w-full rounded-2xl shadow-lg ring-1 ring-dark-400/30"
+              className="w-full aspect-square object-cover"
               controls
               poster={post.thumbnail}
             >
@@ -42,37 +50,74 @@ const PostCard = ({ post, onCommentClick }) => {
               Your browser does not support the video tag.
             </video>
           </div>
-        ) : (
-          <div className="mb-6">
-            <p className="text-gray-100 text-lg leading-relaxed bg-gradient-to-r from-dark-100/30 to-dark-200/30 p-4 rounded-xl border border-dark-400/20">{post.content}</p>
-          </div>
-        )}
+        ) : null}
+        
+        {/* Caption/Content */}
+        <div className="p-4">
+          {post.type === 'video' && post.caption && (
+            <p className="text-gray-900 text-sm mb-3">{post.caption}</p>
+          )}
+          {post.type === 'text' && (
+            <p className="text-gray-900 text-sm leading-relaxed">{post.content}</p>
+          )}
+        </div>
       </div>
 
       {/* Action Bar */}
-      <div className="flex items-center justify-between px-6 py-4 border-t border-dark-300/50 bg-gradient-to-r from-dark-100/20 to-dark-200/20">
-        <div className="flex items-center space-x-8">
-          {/* Like Button */}
-          <button className="flex items-center space-x-3 text-gray-400 hover:text-red-400 transition-all duration-300 p-2 rounded-full hover:bg-red-500/10 transform hover:scale-110 group">
-            <Heart className="h-6 w-6 group-hover:fill-red-400" />
-            <span className="text-sm font-semibold">{post.likes}</span>
-          </button>
+      <div className="px-4 pb-3">
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-4">
+            {/* Like Button */}
+            <button 
+              onClick={handleLike}
+              className="transition-colors hover:text-gray-500"
+            >
+              <Heart 
+                className={`h-6 w-6 ${liked ? 'fill-red-500 text-red-500' : 'text-gray-900'}`} 
+              />
+            </button>
 
-          {/* Comment Button */}
+            {/* Comment Button */}
+            <button 
+              onClick={handleCommentClick}
+              className="text-gray-900 hover:text-gray-500 transition-colors"
+            >
+              <MessageCircle className="h-6 w-6" />
+            </button>
+
+            {/* Share Button */}
+            <button className="text-gray-900 hover:text-gray-500 transition-colors">
+              <Share className="h-6 w-6" />
+            </button>
+          </div>
+
+          {/* Save Button */}
           <button 
-            onClick={handleCommentClick}
-            className="flex items-center space-x-3 text-gray-400 hover:text-blue-400 transition-all duration-300 p-2 rounded-full hover:bg-blue-500/10 transform hover:scale-110"
+            onClick={handleSave}
+            className="transition-colors hover:text-gray-500"
           >
-            <MessageCircle className="h-6 w-6" />
-            <span className="text-sm font-semibold">{post.comments}</span>
-          </button>
-
-          {/* Share Button */}
-          <button className="flex items-center space-x-3 text-gray-400 hover:text-green-400 transition-all duration-300 p-2 rounded-full hover:bg-green-500/10 transform hover:scale-110">
-            <Share className="h-6 w-6" />
-            <span className="text-sm font-semibold">Share</span>
+            <Bookmark 
+              className={`h-6 w-6 ${saved ? 'fill-gray-900 text-gray-900' : 'text-gray-900'}`} 
+            />
           </button>
         </div>
+
+        {/* Likes Count */}
+        <div className="mb-2">
+          <p className="text-gray-900 font-semibold text-sm">
+            {liked ? post.likes + 1 : post.likes} likes
+          </p>
+        </div>
+
+        {/* Comments Preview */}
+        {post.comments > 0 && (
+          <button 
+            onClick={handleCommentClick}
+            className="text-gray-500 text-sm hover:text-gray-700 transition-colors"
+          >
+            View all {post.comments} comments
+          </button>
+        )}
       </div>
     </div>
   );

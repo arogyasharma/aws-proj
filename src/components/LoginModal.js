@@ -44,51 +44,49 @@ const LoginModal = ({ isOpen, onClose, onSwitchToSignup }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-dark-200 to-dark-300 rounded-2xl shadow-2xl w-full max-w-md border border-dark-400/30">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md border border-gray-200">
         {/* Header */}
-        <div className="p-6 border-b border-dark-300/50 flex items-center justify-between">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-            Welcome Back
+        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">
+            Log in to Sportech
           </h2>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {error && (
-            <div className="p-4 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 flex items-center space-x-3">
-              <AlertCircle className="h-5 w-5 flex-shrink-0" />
+            <div className="p-3 rounded-lg bg-red-50 border border-red-200 text-red-800 flex items-center space-x-2">
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
               <span className="text-sm">{error}</span>
             </div>
           )}
 
           {/* Email Field */}
           <div>
-            <label className="block text-sm font-semibold text-blue-300 mb-3 flex items-center space-x-2">
-              <Mail className="h-4 w-4" />
-              <span>Email Address</span>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="w-full px-4 py-3 bg-gradient-to-br from-dark-100 to-dark-200 border-2 border-dark-300/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500/50 transition-all duration-300"
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
               disabled={isLoading}
             />
           </div>
 
           {/* Password Field */}
           <div>
-            <label className="block text-sm font-semibold text-blue-300 mb-3 flex items-center space-x-2">
-              <Lock className="h-4 w-4" />
-              <span>Password</span>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Password
             </label>
             <div className="relative">
               <input
@@ -96,16 +94,16 @@ const LoginModal = ({ isOpen, onClose, onSwitchToSignup }) => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="w-full px-4 py-3 pr-12 bg-gradient-to-br from-dark-100 to-dark-200 border-2 border-dark-300/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500/50 transition-all duration-300"
+                className="w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                 disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                 disabled={isLoading}
               >
-                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
             </div>
           </div>
@@ -114,26 +112,26 @@ const LoginModal = ({ isOpen, onClose, onSwitchToSignup }) => {
           <button
             type="submit"
             disabled={isLoading || !email || !password}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 transform hover:scale-105 disabled:hover:scale-100"
+            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 mt-6"
           >
             {isLoading ? (
-              <Loader className="h-5 w-5 animate-spin" />
+              <Loader className="h-4 w-4 animate-spin" />
             ) : (
-              <span>Sign In</span>
+              <span>Log In</span>
             )}
           </button>
 
           {/* Switch to Signup */}
-          <div className="text-center">
-            <p className="text-gray-400">
+          <div className="text-center pt-4">
+            <p className="text-gray-600 text-sm">
               Don't have an account?{' '}
               <button
                 type="button"
                 onClick={onSwitchToSignup}
-                className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
                 disabled={isLoading}
               >
-                Sign up here
+                Sign up
               </button>
             </p>
           </div>

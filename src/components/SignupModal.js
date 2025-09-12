@@ -60,11 +60,16 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
       return;
     }
 
+      console.log('1. [SignupModal] Sending to register:', { 
+      email: formData.email, 
+      attributes: { name: formData.name } 
+    });
+
     const result = await register(
       formData.email, 
       formData.password, 
       { 
-        name: formData.name,
+        'custom:name': formData.name,
         preferred_username: formData.name
       }
     );
@@ -131,45 +136,44 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-gradient-to-br from-dark-200 to-dark-300 rounded-2xl shadow-2xl w-full max-w-md border border-dark-400/30">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md border border-gray-200">
         {/* Header */}
-        <div className="p-6 border-b border-dark-300/50 flex items-center justify-between">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
-            {step === 'signup' ? 'Create Account' : 'Verify Email'}
+        <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-gray-900">
+            {step === 'signup' ? 'Sign up for Sportech' : 'Verify your email'}
           </h2>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-gray-600 transition-colors"
           >
-            <X className="h-6 w-6" />
+            <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Form */}
         <div className="p-6">
           {error && (
-            <div className={`p-4 rounded-xl border flex items-center space-x-3 mb-6 ${
+            <div className={`p-3 rounded-lg border flex items-center space-x-2 mb-4 ${
               error.includes('resent') 
-                ? 'bg-green-500/20 border-green-500/30 text-green-300' 
-                : 'bg-red-500/20 border-red-500/30 text-red-300'
+                ? 'bg-green-50 border-green-200 text-green-800' 
+                : 'bg-red-50 border-red-200 text-red-800'
             }`}>
               {error.includes('resent') ? (
-                <CheckCircle className="h-5 w-5 flex-shrink-0" />
+                <CheckCircle className="h-4 w-4 flex-shrink-0" />
               ) : (
-                <AlertCircle className="h-5 w-5 flex-shrink-0" />
+                <AlertCircle className="h-4 w-4 flex-shrink-0" />
               )}
               <span className="text-sm">{error}</span>
             </div>
           )}
 
           {step === 'signup' ? (
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* Name Field */}
               <div>
-                <label className="block text-sm font-semibold text-green-300 mb-3 flex items-center space-x-2">
-                  <User className="h-4 w-4" />
-                  <span>Full Name</span>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Full Name
                 </label>
                 <input
                   type="text"
@@ -177,16 +181,15 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                   value={formData.name}
                   onChange={handleInputChange}
                   placeholder="Enter your full name"
-                  className="w-full px-4 py-3 bg-gradient-to-br from-dark-100 to-dark-200 border-2 border-dark-300/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all duration-300"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   disabled={isLoading}
                 />
               </div>
 
               {/* Email Field */}
               <div>
-                <label className="block text-sm font-semibold text-green-300 mb-3 flex items-center space-x-2">
-                  <Mail className="h-4 w-4" />
-                  <span>Email Address</span>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Email
                 </label>
                 <input
                   type="email"
@@ -194,16 +197,15 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                   value={formData.email}
                   onChange={handleInputChange}
                   placeholder="Enter your email"
-                  className="w-full px-4 py-3 bg-gradient-to-br from-dark-100 to-dark-200 border-2 border-dark-300/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all duration-300"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   disabled={isLoading}
                 />
               </div>
 
               {/* Password Field */}
               <div>
-                <label className="block text-sm font-semibold text-green-300 mb-3 flex items-center space-x-2">
-                  <Lock className="h-4 w-4" />
-                  <span>Password</span>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Password
                 </label>
                 <div className="relative">
                   <input
@@ -212,25 +214,24 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     value={formData.password}
                     onChange={handleInputChange}
                     placeholder="Create a password (min 8 characters)"
-                    className="w-full px-4 py-3 pr-12 bg-gradient-to-br from-dark-100 to-dark-200 border-2 border-dark-300/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all duration-300"
+                    className="w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                     disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                     disabled={isLoading}
                   >
-                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
 
               {/* Confirm Password Field */}
               <div>
-                <label className="block text-sm font-semibold text-green-300 mb-3 flex items-center space-x-2">
-                  <Lock className="h-4 w-4" />
-                  <span>Confirm Password</span>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Confirm Password
                 </label>
                 <div className="relative">
                   <input
@@ -239,16 +240,16 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                     value={formData.confirmPassword}
                     onChange={handleInputChange}
                     placeholder="Confirm your password"
-                    className="w-full px-4 py-3 pr-12 bg-gradient-to-br from-dark-100 to-dark-200 border-2 border-dark-300/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all duration-300"
+                    className="w-full px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                     disabled={isLoading}
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
                     disabled={isLoading}
                   >
-                    {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
               </div>
@@ -257,41 +258,41 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 transform hover:scale-105 disabled:hover:scale-100"
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 mt-6"
               >
                 {isLoading ? (
-                  <Loader className="h-5 w-5 animate-spin" />
+                  <Loader className="h-4 w-4 animate-spin" />
                 ) : (
-                  <span>Create Account</span>
+                  <span>Sign Up</span>
                 )}
               </button>
 
               {/* Switch to Login */}
-              <div className="text-center">
-                <p className="text-gray-400">
+              <div className="text-center pt-4">
+                <p className="text-gray-600 text-sm">
                   Already have an account?{' '}
                   <button
                     type="button"
                     onClick={onSwitchToLogin}
-                    className="text-blue-400 hover:text-blue-300 font-semibold transition-colors"
+                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
                     disabled={isLoading}
                   >
-                    Sign in here
+                    Log in
                   </button>
                 </p>
               </div>
             </form>
           ) : (
-            <form onSubmit={handleConfirm} className="space-y-6">
+            <form onSubmit={handleConfirm} className="space-y-4">
               <div className="text-center mb-6">
-                <p className="text-gray-300 text-sm">
-                  We've sent a confirmation code to <span className="text-blue-400 font-semibold">{formData.email}</span>
+                <p className="text-gray-600 text-sm">
+                  We've sent a confirmation code to <span className="text-blue-600 font-medium">{formData.email}</span>
                 </p>
               </div>
 
               {/* Confirmation Code */}
               <div>
-                <label className="block text-sm font-semibold text-green-300 mb-3">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
                   Confirmation Code
                 </label>
                 <input
@@ -299,7 +300,7 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
                   value={confirmationCode}
                   onChange={(e) => setConfirmationCode(e.target.value)}
                   placeholder="Enter 6-digit code"
-                  className="w-full px-4 py-3 bg-gradient-to-br from-dark-100 to-dark-200 border-2 border-dark-300/50 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500/50 transition-all duration-300 text-center text-lg tracking-wider"
+                  className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-center text-lg tracking-wider"
                   disabled={isLoading}
                   maxLength={6}
                 />
@@ -309,21 +310,21 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
               <button
                 type="submit"
                 disabled={isLoading || !confirmationCode}
-                className="w-full bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 disabled:from-gray-600 disabled:to-gray-700 disabled:cursor-not-allowed text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300 flex items-center justify-center space-x-2 transform hover:scale-105 disabled:hover:scale-100"
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium py-2 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2 mt-6"
               >
                 {isLoading ? (
-                  <Loader className="h-5 w-5 animate-spin" />
+                  <Loader className="h-4 w-4 animate-spin" />
                 ) : (
                   <span>Verify Email</span>
                 )}
               </button>
 
               {/* Resend Code */}
-              <div className="text-center">
+              <div className="text-center pt-4">
                 <button
                   type="button"
                   onClick={handleResendCode}
-                  className="text-blue-400 hover:text-blue-300 font-semibold transition-colors text-sm"
+                  className="text-blue-600 hover:text-blue-700 font-medium transition-colors text-sm"
                   disabled={isLoading}
                 >
                   Resend confirmation code
