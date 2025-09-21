@@ -106,14 +106,22 @@ export const AuthProvider = ({ children }) => {
       setError(null);
       setLoading(true);
       
+      // Prepare attributes for Cognito
+      const cognitoAttributes = {
+        email: email, // Standard Cognito email attribute
+        ...attributes
+      };
+      
+      console.log('3. [AuthContext] Sending to Cognito signUp:', { 
+        username: email, 
+        attributes: cognitoAttributes 
+      });
+      
       // Use email as username since Cognito User Pool is configured for email sign-in
       const signUpResult = await signUp({
         username: email, // Use email directly as username
         password: password,
-        attributes: {
-          email: email, // Standard Cognito email attribute
-          ...attributes
-        }
+        attributes: cognitoAttributes
       });
 
       return { 

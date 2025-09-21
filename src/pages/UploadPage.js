@@ -1,7 +1,11 @@
 ﻿import React, { useState, useRef } from 'react';
+import { useAuth } from '../contexts/AuthContext';
+import { getUserName } from '../utils/userUtils';
+
 import { Upload, FileVideo, Type, Send, Image as ImageIcon, Sparkles, CheckCircle, X, Loader, Camera, Plus, ArrowLeft, Heart, MessageCircle, Share, Bookmark } from 'lucide-react';
 
 const UploadPage = () => {
+  const { user } = useAuth(); // Add this line to get user from auth context
   const [activeTab, setActiveTab] = useState('image');
   const [textContent, setTextContent] = useState('');
   const [videoFile, setVideoFile] = useState(null);
@@ -70,6 +74,11 @@ const UploadPage = () => {
     setUploadProgress(0);
 
     try {
+      // Use utility function to extract username
+      const username = getUserName(user);
+      console.log('DEBUG: User object:', user);
+      console.log('DEBUG: User attributes:', user?.attributes);
+      console.log('DEBUG: Sending username to Flask server for image upload:', username);
       // Simulate progress updates
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
@@ -81,8 +90,9 @@ const UploadPage = () => {
       const formData = new FormData();
       formData.append('files', imageFile);
       formData.append('caption', imageCaption);
+      formData.append('username', username); // Add username here
       
-      const response = await fetch('https://champion-normal-raven.ngrok-free.app/upload', {
+      const response = await fetch('http://localhost:8000/upload', {
         method: 'POST',
         body: formData,
       });
@@ -154,6 +164,9 @@ const UploadPage = () => {
     setUploadProgress(0);
 
     try {
+      // Use utility function to extract username
+      const username = getUserName(user);
+      console.log('DEBUG: Sending username to Flask server for video upload:', username);
       // Simulate progress updates
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
@@ -165,8 +178,9 @@ const UploadPage = () => {
       const formData = new FormData();
       formData.append('files', videoFile);
       formData.append('caption', videoCaption);
+       formData.append('username', username); // Add username here
       
-      const response = await fetch('https://champion-normal-raven.ngrok-free.app/upload', {
+      const response = await fetch('http://localhost:8000/upload', {
         method: 'POST',
         body: formData,
       });
@@ -230,14 +244,16 @@ const UploadPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-black">
-      <div className="max-w-md mx-auto bg-black">
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-gray-950 flex items-center justify-center py-8">
+      <div className="w-full max-w-md mx-auto bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl shadow-2xl border border-gray-800 overflow-hidden">
+        {/* Username Test - remove after debugging */}
+       
         {/* Instagram-style Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-800">
+  <div className="flex items-center justify-between p-5 border-b border-gray-800 bg-gradient-to-r from-gray-900 to-gray-800">
           {step === 'caption' ? (
             <button 
               onClick={handleBackToUpload}
-              className="text-white hover:text-gray-300 transition-colors"
+              className="text-white hover:text-blue-400 transition-colors rounded-full p-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <ArrowLeft className="h-6 w-6" />
             </button>
@@ -245,7 +261,7 @@ const UploadPage = () => {
             <div></div>
           )}
           
-          <h1 className="text-white font-semibold text-lg">
+          <h1 className="text-white font-bold text-xl tracking-wide drop-shadow">
             {step === 'upload' ? 'New Post' : 'New Post'}
           </h1>
           
@@ -253,7 +269,7 @@ const UploadPage = () => {
             <button
               onClick={activeTab === 'image' ? handleImageUpload : handleVideoUpload}
               disabled={isUploading || (!imageFile && !videoFile)}
-              className="text-blue-500 font-semibold hover:text-blue-400 transition-colors disabled:text-gray-500"
+              className="px-4 py-1 rounded-full bg-blue-600 text-white font-semibold shadow hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all disabled:bg-gray-700 disabled:text-gray-400 disabled:cursor-not-allowed"
             >
               {isUploading ? 'Sharing...' : 'Share'}
             </button>
@@ -262,23 +278,23 @@ const UploadPage = () => {
 
         {/* Tab Navigation - Instagram Style */}
         {step === 'upload' && (
-          <div className="flex bg-black border-b border-gray-800">
+          <div className="flex bg-gradient-to-r from-gray-900 to-gray-800 border-b border-gray-800">
             <button
               onClick={() => setActiveTab('image')}
-              className={`flex-1 py-3 text-center font-medium transition-all ${
+              className={`flex-1 py-3 text-center font-semibold transition-all tracking-wide ${
                 activeTab === 'image'
-                  ? 'text-white border-b-2 border-white'
-                  : 'text-gray-500'
+                  ? 'text-white border-b-4 border-blue-500 bg-gradient-to-r from-blue-900/30 to-blue-700/10'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/60'
               }`}
             >
               GALLERY
             </button>
             <button
               onClick={() => setActiveTab('video')}
-              className={`flex-1 py-3 text-center font-medium transition-all ${
+              className={`flex-1 py-3 text-center font-semibold transition-all tracking-wide ${
                 activeTab === 'video'
-                  ? 'text-white border-b-2 border-white'
-                  : 'text-gray-500'
+                  ? 'text-white border-b-4 border-blue-500 bg-gradient-to-r from-blue-900/30 to-blue-700/10'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-800/60'
               }`}
             >
               VIDEO
@@ -287,7 +303,7 @@ const UploadPage = () => {
         )}
 
         {/* Main Content */}
-        <div className="flex-1">
+  <div className="flex-1">
           {/* Status Message */}
           <StatusMessage 
             status={uploadStatus} 
@@ -309,21 +325,21 @@ const UploadPage = () => {
           )}
 
           {step === 'upload' ? (
-            // Upload Step - Instagram Style
-            <div className="relative h-96">
+            // Upload Step - Enhanced Style
+            <div className="relative h-96 flex items-center justify-center">
               {/* Upload Area */}
               <div 
                 onClick={triggerFileInput}
-                className="h-full bg-gray-900 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-800 transition-colors"
+                className="h-80 w-full bg-gradient-to-br from-gray-900 to-gray-800 flex flex-col items-center justify-center cursor-pointer hover:from-blue-900/40 hover:to-blue-800/30 transition-all rounded-xl border-2 border-dashed border-blue-700 shadow-inner"
               >
                 <div className="text-center">
-                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <Camera className="h-8 w-8 text-white" />
+                  <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center shadow-lg">
+                    <Camera className="h-10 w-10 text-white drop-shadow" />
                   </div>
-                  <h3 className="text-white text-lg font-medium mb-2">
+                  <h3 className="text-white text-xl font-bold mb-2 drop-shadow">
                     {activeTab === 'image' ? 'Select photos to share' : 'Select videos to share'}
                   </h3>
-                  <p className="text-gray-400 text-sm">
+                  <p className="text-gray-300 text-base">
                     {activeTab === 'image' ? 'You can select multiple photos' : 'You can upload one video at a time'}
                   </p>
                 </div>
@@ -340,55 +356,55 @@ const UploadPage = () => {
               />
             </div>
           ) : (
-            // Caption Step - Instagram Style
-            <div className="h-screen bg-black">
+            // Caption Step - Enhanced Style
+            <div className="min-h-[32rem] bg-gradient-to-br from-black via-gray-900 to-gray-950 flex flex-col">
               {/* Media Preview */}
-              <div className="h-96 bg-black flex items-center justify-center">
+              <div className="h-80 bg-black flex items-center justify-center rounded-xl shadow-inner border border-gray-800 mt-4 mx-4">
                 {mediaPreview && activeTab === 'image' && (
                   <img 
                     src={mediaPreview} 
                     alt="Preview" 
-                    className="max-h-full max-w-full object-contain"
+                    className="max-h-72 max-w-full object-contain rounded-lg shadow-lg"
                   />
                 )}
                 {mediaPreview && activeTab === 'video' && (
                   <video 
                     src={mediaPreview} 
-                    className="max-h-full max-w-full object-contain"
+                    className="max-h-72 max-w-full object-contain rounded-lg shadow-lg"
                     controls
                   />
                 )}
               </div>
 
               {/* Caption Input */}
-              <div className="p-4 border-t border-gray-800">
+              <div className="p-5 border-t border-gray-800 bg-gradient-to-r from-gray-900 to-gray-800 mt-4 mx-4 rounded-xl shadow">
                 <div className="flex items-start space-x-3">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex-shrink-0"></div>
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex-shrink-0 shadow"></div>
                   <div className="flex-1">
                     <textarea
                       value={activeTab === 'image' ? imageCaption : videoCaption}
                       onChange={(e) => activeTab === 'image' ? setImageCaption(e.target.value) : setVideoCaption(e.target.value)}
                       placeholder="Write a caption..."
-                      className="w-full bg-transparent text-white placeholder-gray-500 resize-none border-none outline-none text-sm"
-                      rows={4}
+                      className="w-full bg-transparent text-white placeholder-gray-400 resize-none border-none outline-none text-base font-medium"
+                      rows={3}
+                      maxLength={2200}
                     />
                   </div>
                 </div>
-                
                 {/* Post Interaction Preview */}
-                <div className="mt-4 pt-4 border-t border-gray-800">
+                <div className="mt-6 pt-4 border-t border-gray-800">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <Heart className="h-6 w-6 text-gray-400" />
-                      <MessageCircle className="h-6 w-6 text-gray-400" />
-                      <Send className="h-6 w-6 text-gray-400" />
+                      <Heart className="h-6 w-6 text-gray-400 hover:text-pink-500 transition-colors cursor-pointer" />
+                      <MessageCircle className="h-6 w-6 text-gray-400 hover:text-blue-400 transition-colors cursor-pointer" />
+                      <Send className="h-6 w-6 text-gray-400 hover:text-green-400 transition-colors cursor-pointer" />
                     </div>
-                    <Bookmark className="h-6 w-6 text-gray-400" />
+                    <Bookmark className="h-6 w-6 text-gray-400 hover:text-yellow-400 transition-colors cursor-pointer" />
                   </div>
                   <div className="mt-2">
                     <p className="text-white text-sm font-semibold">0 likes</p>
                     {(imageCaption || videoCaption) && (
-                      <p className="text-white text-sm mt-1">
+                      <p className="text-white text-base mt-1">
                         <span className="font-semibold">username</span> {activeTab === 'image' ? imageCaption : videoCaption}
                       </p>
                     )}

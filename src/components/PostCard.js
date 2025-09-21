@@ -39,7 +39,7 @@ const PostCard = ({ post, onCommentClick }) => {
 
       {/* Content */}
       <div>
-        {post.type === 'video' ? (
+        {post.type === 'video' && (
           <div>
             <video
               className="w-full aspect-square object-cover"
@@ -50,11 +50,31 @@ const PostCard = ({ post, onCommentClick }) => {
               Your browser does not support the video tag.
             </video>
           </div>
-        ) : null}
+        )}
+        
+        {post.type === 'image' && (
+          <div>
+            <img
+              src={post.imageUrl}
+              alt={post.caption || 'User post'}
+              className="w-full aspect-square object-cover"
+              onError={(e) => {
+                e.target.style.display = 'none';
+                e.target.nextSibling.style.display = 'flex';
+              }}
+            />
+            <div 
+              className="w-full aspect-square bg-gray-200 flex items-center justify-center hidden"
+              style={{ display: 'none' }}
+            >
+              <p className="text-gray-500">Failed to load image</p>
+            </div>
+          </div>
+        )}
         
         {/* Caption/Content */}
         <div className="p-4">
-          {post.type === 'video' && post.caption && (
+          {(post.type === 'video' || post.type === 'image') && post.caption && (
             <p className="text-gray-900 text-sm mb-3">{post.caption}</p>
           )}
           {post.type === 'text' && (

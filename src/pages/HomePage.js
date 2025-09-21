@@ -1,9 +1,60 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import PostCard from '../components/PostCard';
-import { TrendingUp, Users, Star, Zap, Heart, MessageCircle, Search, Bell, Plus, Home, Compass, User, Settings, LogOut, Bookmark, UserPlus } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import { getUserName } from '../utils/userUtils';
+import { TrendingUp, Users, Star, Zap, Heart, MessageCircle, Search, Bell, Plus, Home, Compass, User, Settings, LogOut, Bookmark, UserPlus, Loader } from 'lucide-react';
 
 const HomePage = ({ onPostClick }) => {
-  // Mock data for demonstration
+  const { user } = useAuth();
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchMedia = async () => {
+      try {
+        const currentUsername = getUserName(user);
+        const response = await fetch(`http://localhost:8000/media?current_user=${encodeURIComponent(currentUsername)}`);
+        if (!response.ok) throw new Error('Failed to fetch media');
+        const data = await response.json();
+        const transformedPosts = data.media.map((media, index) => ({
+          id: media.id || `media_${index}`,
+          type: media.type === 'image' ? 'image' : media.type === 'video' ? 'video' : 'text',
+          username: media.username,
+          timestamp: formatTimestamp(media.timestamp),
+          caption: media.caption || '',
+          imageUrl: media.type === 'image' ? media.url : undefined,
+          videoUrl: media.type === 'video' ? media.url : undefined,
+          thumbnail: media.type === 'video' ? media.thumbnail : undefined,
+          likes: Math.floor(Math.random() * 1000) + 50,
+          comments: Math.floor(Math.random() * 100) + 5,
+          content: media.type === 'text' ? media.caption : undefined
+        }));
+        setPosts(transformedPosts);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchMedia();
+  }, [user]);
+
+  function formatTimestamp(timestamp) {
+    if (!timestamp) return 'Recently';
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+    if (diffInHours < 1) return 'Just now';
+    if (diffInHours < 24) return `${diffInHours} hours ago`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    if (diffInDays < 7) return `${diffInDays} days ago`;
+    return date.toLocaleDateString();
+  }
+
+
+
+  // Mock data for fallback (when no real data is available)
   const mockPosts = [
     {
       id: 1,
@@ -233,11 +284,36 @@ const HomePage = ({ onPostClick }) => {
               </div>
 
               {/* Posts Feed */}
-              {mockPosts.map((post, index) => (
-                <div key={post.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
-                  <PostCard post={post} onCommentClick={onPostClick} />
+              {loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader className="h-6 w-6 text-blue-600 animate-spin" />
+                  <span className="ml-2 text-gray-600">Loading posts...</span>
                 </div>
-              ))}
+              ) : error ? (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-center">
+                  <p className="text-red-600">Error loading posts: {error}</p>
+                  <button 
+                    onClick={() => window.location.reload()} 
+                    className="mt-2 text-red-600 hover:text-red-700 font-medium"
+                  >
+                    Retry
+                  </button>
+                </div>
+              ) : posts.length === 0 ? (
+                <div className="bg-gray-50 border border-gray-200 rounded-lg p-8 text-center">
+                  <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                    <Plus className="h-8 w-8 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">No posts yet</h3>
+                  <p className="text-gray-600">Be the first to share something with the community!</p>
+                </div>
+              ) : (
+                posts.map((post, index) => (
+                  <div key={post.id} className="animate-fade-in" style={{ animationDelay: `${index * 100}ms` }}>
+                    <PostCard post={post} onCommentClick={onPostClick} />
+                  </div>
+                ))
+              )}
             </div>
           </div>
 

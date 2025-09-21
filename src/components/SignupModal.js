@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff, Loader, X, AlertCircle, User, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { storeUsername } from '../utils/usernameStorage';
 
 const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -28,8 +29,22 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   };
 
   const validateForm = () => {
-    if (!formData.email || !formData.password || !formData.confirmPassword || !formData.name) {
+    if (!formData.email || !formData.password || !formData.confirmPassword || !formData.username) {
       return 'Please fill in all fields';
+    }
+    
+    if (formData.username.length < 3) {
+      return 'Username must be at least 3 characters long';
+    }
+    
+    if (formData.username.length > 20) {
+      return 'Username must be less than 20 characters';
+    }
+    
+    // Username should only contain letters, numbers, underscores, and hyphens
+    const usernameRegex = /^[a-zA-Z0-9_-]+$/;
+    if (!usernameRegex.test(formData.username)) {
+      return 'Username can only contain letters, numbers, underscores, and hyphens';
     }
     
     if (formData.password.length < 8) {
@@ -62,19 +77,22 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
       console.log('1. [SignupModal] Sending to register:', { 
       email: formData.email, 
-      attributes: { name: formData.name } 
+      attributes: { username: formData.username } 
     });
 
     const result = await register(
       formData.email, 
       formData.password, 
       { 
-        'custom:name': formData.name,
-        preferred_username: formData.name
+        name: formData.username,
+        given_name: formData.username,
+        family_name: formData.username
       }
     );
     
     if (result.success) {
+      // Store username in local storage as backup
+      storeUsername(formData.email, formData.username);
       setGeneratedUsername(result.username); // Store the generated username
       setStep('confirm');
     } else {
@@ -99,7 +117,7 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
     if (result.success) {
       onClose();
       // Reset form
-      setFormData({ name: '' ,email: '', password: '', confirmPassword: ''});
+      setFormData({ username: '' ,email: '', password: '', confirmPassword: ''});
       setConfirmationCode('');
       setGeneratedUsername('');
       setStep('signup');
@@ -125,7 +143,7 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
   };
 
   const handleClose = () => {
-    setFormData({ name: '' ,email: '', password: '', confirmPassword: '' });
+    setFormData({ username: '' ,email: '', password: '', confirmPassword: '' });
     setConfirmationCode('');
     setGeneratedUsername('');
     setError('');
@@ -170,20 +188,23 @@ const SignupModal = ({ isOpen, onClose, onSwitchToLogin }) => {
 
           {step === 'signup' ? (
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* Name Field */}
+              {/* Username Field */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
+                  Username
                 </label>
                 <input
                   type="text"
-                  name="name"
-                  value={formData.name}
+                  name="username"
+                  value={formData.username}
                   onChange={handleInputChange}
-                  placeholder="Enter your full name"
+                  placeholder="e.g., john_doe123"
                   className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                   disabled={isLoading}
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  This will be displayed on your posts (3-20 characters, letters, numbers, _, -)
+                </p>
               </div>
 
               {/* Email Field */}
