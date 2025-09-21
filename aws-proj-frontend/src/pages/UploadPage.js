@@ -92,7 +92,7 @@ const UploadPage = () => {
       formData.append('caption', imageCaption);
       formData.append('username', username); // Add username here
       
-      const response = await fetch('http://champion-normal-raven.ngrok-free.app/upload', {
+      const response = await fetch('https://champion-normal-raven.ngrok-free.app/upload', {
         method: 'POST',
         body: formData,
       });
