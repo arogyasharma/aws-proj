@@ -14,7 +14,13 @@ const HomePage = ({ onPostClick }) => {
     const fetchMedia = async () => {
       try {
         const currentUsername = getUserName(user);
-        const response = await fetch(`http://localhost:8000/media?current_user=${encodeURIComponent(currentUsername)}`);
+       const response = await fetch(`https://champion-normal-raven.ngrok-free.app/media?current_user=${encodeURIComponent(currentUsername)}`, {
+    headers: {
+        'ngrok-skip-browser-warning': 'true', // This bypasses the warning
+    }
+});
+        //const text= await response.text();
+        console.log(response)
         if (!response.ok) throw new Error('Failed to fetch media');
         const data = await response.json();
         const transformedPosts = data.media.map((media, index) => ({
