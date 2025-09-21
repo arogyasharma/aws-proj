@@ -92,7 +92,7 @@ const UploadPage = () => {
       formData.append('caption', imageCaption);
       formData.append('username', username); // Add username here
       
-      const response = await fetch('http://localhost:8000/upload', {
+      const response = await fetch('http://champion-normal-raven.ngrok-free.app/upload', {
         method: 'POST',
         body: formData,
       });
@@ -180,7 +180,7 @@ const UploadPage = () => {
       formData.append('caption', videoCaption);
        formData.append('username', username); // Add username here
       
-      const response = await fetch('http://localhost:8000/upload', {
+      const response = await fetch('http://champion-normal-raven.ngrok-free.app/upload', {
         method: 'POST',
         body: formData,
       });
